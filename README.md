@@ -5,7 +5,7 @@
 Add as a skill source:
 
 ```bash
-hermes skills tap add keepnotes-ai/hermes-skills
+hermes skills tap add hughpyle/hermes-skills
 ```
 
 Then browse, search, or install skills with the Hermes skills hub.
