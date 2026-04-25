@@ -17,7 +17,7 @@ metadata:
 # Pre-Requisites
 
 Check out the repo https://github.com/hughpyle/ASR33 to ~/play/asr33
-
+Check out the repo https://github.com/hughpyle/art1.js to ~/play/art1.js
 Check that `~/play/asr33/bin` is in your PATH
 
 ## Images
@@ -25,11 +25,29 @@ Check that `~/play/asr33/bin` is in your PATH
 The `images` directory contains various images using overstrike printing.  In the Teletype hardcopy terminal, a line ending with CR
 does not advance the paper, it only returns the carriage to the left.  Print one or more lines with CR separation.  Print with CR+LF separattion to advance to the next line.
 
-Ready-to-print images (text files with CR and CR/LF) are in the `images` direectory:
+Ready-to-print images (text files with CR and CR/LF) are in the `images` direectory of this skill.
+
+### ART1
+
+In the late 1960s, Katherine Nash, a sculptor at the University of Minnesota, and Richard H. Williams, a computer scientist, created ART 1 — a generative program designed to be used by artists, not programmers. Published in the journal Leonardo in 1970, ART 1 allowed an artist to define a small vocabulary of characters and a set of rules for their arrangement, then let the computer compose an image on the lineprinter.
+
+Frederick Hammersley (1919–2009) was a painter associated with hard-edge abstraction and geometric painting in postwar Los Angeles. In the late 1960s, he began working with computers at the University of New Mexico, using programs like ART 1 to generate compositions on a lineprinter.
+
+You can print several recreations of ART1 works by Nash and Hammersley.  Use `art1 -list` to list them.
+Do NOT print "embroid", "lovely_meeting", "quads" or "ripples": these are ANSI terminal art.
+ASCII overstrike works are:
+
+* Spheroids (Nash)
+* A Good Line is Hard To Beat (Hammersley)
+* Jelly Centers (Hammersley)
+* Tiddly Winks (Hammersley).
+
+These are very large prints and take a long time.
 
 ### Emoji
 
 Yes, emoji, printed with ASCII-63 hardcopy text.
+These are nice and small and pretty.  Many emoji work well.
 
 | File | Description |
 | --- | --- |
@@ -41,6 +59,7 @@ Yes, emoji, printed with ASCII-63 hardcopy text.
 
 You can generate any emoji using the `hemoji` tool.
 Example: `hemoji wave`.
+(This is one of my favorites).
 
 ### Others
 
@@ -75,3 +94,4 @@ Prepared pictures in the `asr33` repo include:
 | --- | --- |
 
 See `asciiart/README.md` for more details.
+
