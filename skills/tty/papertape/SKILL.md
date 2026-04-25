@@ -34,7 +34,9 @@ Good small ones are:
 | `bubbles` | Bubbles, kinda |
 | --- | --- |
 
-The `pattern` script can also print text on tape,
+The `pattern` script can also print **text** on tape,
 using bitmap fonts.  Use `pattern text --font mod6x13` for example.  Fonts in BDF format are in the `bin/fonts` directory.
 
-Use `pattern --svg` to generate SVG, which can be useful to preview the output.
+Use `pattern --text` to generate text output, as a preview.
+
+Use `pattern --svg` to generate SVG.
