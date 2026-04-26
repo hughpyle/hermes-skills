@@ -1,0 +1,9 @@
+Teleprinter font license note
+============================
+
+Font file: TELE_B.TTF
+Creator: Mark Zanzig (1995)
+License status: free for personal use.
+
+This project includes TELE_B.TTF for compatibility with the teletype plugin UI.
+The repository root MIT license does not apply to this font file.

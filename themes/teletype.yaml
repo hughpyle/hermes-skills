@@ -1,0 +1,46 @@
+name: teletype
+label: Teletype
+description: ASR-33 paper roll with ink-on-beige and Teleprinter font.
+palette:
+  background:
+    hex: "#FFEEDD"
+    alpha: 1.0
+  midground:
+    hex: "#333333"
+    alpha: 1.0
+  foreground:
+    hex: "#000000"
+    alpha: 0.0
+  warmGlow: "rgba(120, 90, 60, 0.15)"
+  noiseOpacity: 0.4
+typography:
+  fontSans: '"Teleprinter", monospace'
+  fontMono: '"Teleprinter", monospace'
+  fontDisplay: '"Teleprinter", monospace'
+  fontUrl: "/dashboard-plugins/teletype/dist/fonts/teleprinter.css"
+  baseSize: "16px"
+  lineHeight: "1.4"
+  letterSpacing: "0"
+layout:
+  radius: "0"
+  density: "comfortable"
+layoutVariant: standard
+assets:
+  bg: "/dashboard-plugins/teletype/dist/img/paper.png"
+componentStyles:
+  page:
+    background-color: "#FFEEDD"
+    color: "#333333"
+  card:
+    background-color: "#FFEEDD"
+    border: "1px solid #d4c4a4"
+    box-shadow: "none"
+customCSS: |
+  /* paper texture scrolls with the page (background-attachment: local),
+     so as the paper roll grows the grain moves in lockstep with page motion. */
+  body {
+    background-image: var(--theme-asset-bg);
+    background-repeat: repeat;
+  }
+  /* drop the gradient backdrop the standard layout adds */
+  [data-layout-variant="standard"] .backdrop { display: none; }
