@@ -16,6 +16,10 @@ with `getty` for interactive login.
 
 ## Using this repo with Hermes
 
+First there are skills for overstrike ASCII art (including emoji!) and
+paper-tape patterns (if you have a tape punch).  A few overstrike artworks
+are included here, and the [ASR33 repo](https://github.com/hughpyle/asr33) has tools for generating them.
+
 Add as a skill source:
 
 ```bash
@@ -73,3 +77,7 @@ The WebSocket at `/api/plugins/teletype/tty` has no per-request auth
 and trusts the dashboard's localhost binding. If you reverse-proxy
 the dashboard to anywhere reachable beyond your machine, put your
 own auth in front of it.
+
+![spheroids](spheroids.jpg)
+
+_Spheroids_, Katherine Nash (1968), recreated on the Teletype Model 33 by Hugh Pyle (2019).
