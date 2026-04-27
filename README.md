@@ -1,5 +1,17 @@
 # Hermes Agent Skills
 
+Teletype ASR33 was the original terminal for Unix. The first ASCII machine.
+Mechanical keyboard and printer, a legacy of the telegraph age.
+
+This repo contains skills, and a custom theme and dashboard, for using
+Hermes Agent as a Teletype ASR33 emulator.
+
+If you have a *real* Teletype ASR33, you can use the [hermes-shell](https://github.com/hughpyle/hermes-shell)
+as the back-end, which provides a command-line shell that you can use
+with `getty` for interactive login.
+
+<video src="wave.mov" controls="controls" width="100%"></video>
+
 ## Using this repo with Hermes
 
 Add as a skill source:
@@ -9,17 +21,6 @@ hermes skills tap add hughpyle/hermes-skills
 ```
 
 Then browse, search, or install skills with the Hermes skills hub.
-
-
-## Layout
-
-```
-skills/<category>/<skill-name>/
-  SKILL.md          # skill definition (frontmatter + instructions)
-  scripts/          # bundled scripts referenced by the skill
-  references/       # reference docs loaded on demand
-  templates/        # reusable templates
-```
 
 ## Teletype Plugin (dashboard)
 
