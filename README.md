@@ -6,11 +6,13 @@ Mechanical keyboard and printer, a legacy of the telegraph age.
 This repo contains skills, and a custom theme and dashboard, for using
 Hermes Agent as a Teletype ASR33 emulator.
 
-If you have a *real* Teletype ASR33, you can use the [hermes-shell](https://github.com/hughpyle/hermes-shell)
-as the back-end, which provides a command-line shell that you can use
-with `getty` for interactive login.
+Video (sound on!):
 
 https://github.com/user-attachments/assets/34d6fc69-453b-4dad-8b70-d4ca6e930598
+
+If you have a *real* Teletype ASR33, you can use [hermes-shell](https://github.com/hughpyle/hermes-shell)
+as the back-end, which provides a command-line shell that you can use
+with `getty` for interactive login.
 
 ## Using this repo with Hermes
 
