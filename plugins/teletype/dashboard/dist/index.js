@@ -18,6 +18,7 @@
   const SESSION_STORAGE_KEY = "teletype.session_id";
   const BOOTED_STORAGE_KEY = "teletype.booted";
   const BROWSER_LID_KEY = "teletype.lid";
+  const BROWSER_CASE_KEY = "teletype.case-mode";
   const BACKOFF_INITIAL_MS = 1000;
   const BACKOFF_MAX_MS = 30000;
 
@@ -30,19 +31,23 @@
     sessionId: null,
     booted: false,
     lid: "up",
+    caseMode: "33",
   };
 
   function randInt(min, max) {
     return min + Math.floor(Math.random() * (max - min + 1));
   }
 
-  function upperFold(ch) {
-    let c = ch.charCodeAt(0);
-    c = (c - 32) & 127;
-    if (c > 64) {
-      c = 32 | (c & 31);
+  // Mask incoming bytes to 7-bit ASCII. In Model 33 mode, additionally fold
+  // 0x60-0x7F down to 0x40-0x5F, mirroring how a real ASR-33's printer decoded
+  // codes outside its uppercase glyph range. Unicode therefore mangles into
+  // low ASCII rather than producing JS toUpperCase artifacts.
+  function caseFold(ch, allowLowercase) {
+    let c = ch.charCodeAt(0) & 0x7F;
+    if (!allowLowercase && c >= 0x60) {
+      c &= 0x5F;
     }
-    return String.fromCharCode(c + 32);
+    return String.fromCharCode(c);
   }
 
   function nextSessionId() {
@@ -96,6 +101,15 @@
 
   function setLidStorage(value) {
     browserStorageSet(BROWSER_LID_KEY, value === "down" ? "down" : "up");
+  }
+
+  function getCaseStorage() {
+    const raw = browserStorageGet(BROWSER_CASE_KEY);
+    return raw === "37" ? "37" : "33";
+  }
+
+  function setCaseStorage(value) {
+    browserStorageSet(BROWSER_CASE_KEY, value === "37" ? "37" : "33");
   }
 
   function teletypeWsUrl(sessionId, host) {
@@ -348,16 +362,21 @@ class PaperRoll {
       this.lineBellArmed = true;
       this.charWidth = 14;
       this.lineHeight = 20;
-      this.fontFamily = "Teleprinter, monospace";
+      this.fontFamily = "Teletype33, monospace";
       this.fontSize = 18;
       this.bg = "#F5E7D2";
       this.fg = "#000";
       this.paddingX = 8;
       this.paddingY = 10;
+      this.caseMode = "33";
       this._dirty = true;
       this._raf = true;
       this._draw();
       this._startRenderLoop();
+    }
+
+    setCaseMode(mode) {
+      this.caseMode = mode === "37" ? "37" : "33";
     }
 
     setCanvas(canvas) {
@@ -453,7 +472,7 @@ class PaperRoll {
       }
       if (ch >= " ") {
         const row = this.rows[this.rowIdx];
-        row.placeChar(this.col, upperFold(ch));
+        row.placeChar(this.col, caseFold(ch, this.caseMode === "37"));
         const next = Math.min(COLUMNS - 1, this.col + 1);
         event = this.maybeBellForward(this.col, next);
         this.col = next;
@@ -1120,9 +1139,9 @@ class PaperRoll {
     if (event.key.length !== 1) {
       return {};
     }
-    const folded = upperFold(event.key);
-    if (folded >= " " && folded <= "~") {
-      return { ch: folded };
+    const ch = event.key;
+    if (ch >= " " && ch <= "~") {
+      return { ch };
     }
     return {};
   }
@@ -1156,6 +1175,11 @@ class PaperRoll {
       const persistedLid = getLidStorage();
       runtimeState.lid = persistedLid;
       return persistedLid;
+    });
+    const [caseMode, setCaseMode] = useState(() => {
+      const persisted = getCaseStorage();
+      runtimeState.caseMode = persisted;
+      return persisted;
     });
 
     const statusLabel = backendThinking ? "thinking" : printing ? "printing" : connectionState || "idle";
@@ -1210,6 +1234,16 @@ class PaperRoll {
       const nextLid = lid === "up" ? "down" : "up";
       setLidPosition(nextLid);
     }, [lid, setLidPosition]);
+
+    const setCaseModeValue = useCallback((nextMode) => {
+      const normalized = nextMode === "37" ? "37" : "33";
+      setCaseMode(normalized);
+      runtimeState.caseMode = normalized;
+      setCaseStorage(normalized);
+      if (paperRef.current) {
+        paperRef.current.setCaseMode(normalized);
+      }
+    }, []);
 
     const ensurePromptAtLineStart = useCallback(() => {
       const paper = paperRef.current;
@@ -1403,6 +1437,7 @@ class PaperRoll {
         paper.setCanvas(canvasRef.current);
       }
       paper.setScrollContainer(containerRef.current);
+      paper.setCaseMode(runtimeState.caseMode);
       runtimeState.paper = paper;
       paperRef.current = paper;
 
@@ -1605,6 +1640,36 @@ class PaperRoll {
           React.createElement(
             "div",
             { className: "teletype-toolbar-actions" },
+            React.createElement(
+              "div",
+              {
+                className: "teletype-case-toggle",
+                role: "group",
+                "aria-label": "teletype model: uppercase-only (33) or lowercase-capable (37)",
+              },
+              React.createElement(
+                "button",
+                {
+                  type: "button",
+                  className: `teletype-case-option ${caseMode === "33" ? "active" : ""}`,
+                  "aria-pressed": caseMode === "33",
+                  title: "model 33: uppercase only",
+                  onClick: () => setCaseModeValue("33"),
+                },
+                "33"
+              ),
+              React.createElement(
+                "button",
+                {
+                  type: "button",
+                  className: `teletype-case-option ${caseMode === "37" ? "active" : ""}`,
+                  "aria-pressed": caseMode === "37",
+                  title: "model 37: lowercase allowed",
+                  onClick: () => setCaseModeValue("37"),
+                },
+                "37"
+              )
+            ),
             React.createElement(
               "button",
               {

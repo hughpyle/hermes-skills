@@ -109,9 +109,9 @@ plain completion response returns.
                 ├── img/
                 │   └── paper.png
                 ├── fonts/
-                │   ├── TELE_B.TTF
+                │   ├── Teletype33.ttf
                 │   ├── teleprinter.css
-                │   └── LICENSE-TELE_B.txt
+                │   └── LICENSE-Teletype33.txt
                 └── sounds/
                     ├── up-{hum,bell,cr-01..03,key-01..07,...}.wav
                     └── down-{...}.wav    # all 34 from ~/play/ttyemu/sounds
@@ -180,7 +180,7 @@ Hermes OpenAI-compatible API server at `http://127.0.0.1:8642` or the configured
 ```yaml
 name: teletype
 label: Teletype
-description: ASR-33 paper roll with ink-on-beige and Teleprinter font.
+description: ASR-33 paper roll with ink-on-beige and Teletype33 font.
 palette:
   background:
     hex: "#FFEEDD"
@@ -194,9 +194,9 @@ palette:
   warmGlow: "rgba(120, 90, 60, 0.15)"
   noiseOpacity: 0.4
 typography:
-  fontSans: '"Teleprinter", monospace'
-  fontMono: '"Teleprinter", monospace'
-  fontDisplay: '"Teleprinter", monospace'
+  fontSans: '"Teletype33", monospace'
+  fontMono: '"Teletype33", monospace'
+  fontDisplay: '"Teletype33", monospace'
   fontUrl: "/dashboard-plugins/teletype/dist/fonts/teleprinter.css"
   baseSize: "16px"
   lineHeight: "1.4"
@@ -230,10 +230,9 @@ Notes on the paper background:
 
 - A subtle 256×256 tileable PNG of warm-beige fiber paper. ~50 KB.
 - `fontUrl` points at `dashboard/dist/fonts/teleprinter.css`, which declares
-  `@font-face { font-family: "Teleprinter"; src: url("./TELE_B.TTF"); }`.
-- `TELE_B.TTF` is copyright 1995 Mark Zanzig and free for personal use. Ship
-  `LICENSE-TELE_B.txt` next to the font and state in the plugin README that
-  the repository MIT license does not apply to the font file.
+  `@font-face { font-family: "Teletype33"; src: url("./Teletype33.ttf"); }`.
+- `Teletype33.ttf` is released under CC0 1.0 Universal. Ship
+  `LICENSE-Teletype33.txt` next to the font.
 - `background-attachment: local`. As the user scrolls down through the paper
   roll, the grain moves with the page content — the paper feels physical, not
   pinned to the viewport.
@@ -1150,7 +1149,7 @@ decorators or similar patterns that assume the module is already present in
 | **5** | Print loops + cross-fade: lookahead picks chars vs spaces; chars/spaces gain ramps; CR sample + sync reset. | Distinct print-bar sounds; CR thunks audibly different from regular chars. |
 | **6** | LLM proxy: vendor hsh code, system_prompt.txt, `_call_completions`, ascii_sanitize, wrap_text. Status events. | Type a prompt, get a real ASCII reply printed at 10cps. |
 | **7** | Margin-bell behavior; FF/BS/TAB edge cases verified. Reconnect logic. | Bell rings when carriage reaches `MARGIN_BELL_COLUMN`, not on completion. Disconnect WS during a completion or queued printout, reconnect, see queued output drain if server retained the session. |
-| **8** | Theme polish: paper texture, Teleprinter font, color palette, paper card chrome. | Looks right. |
+| **8** | Theme polish: paper texture, Teletype33 font, color palette, paper card chrome. | Looks right. |
 | **9** | Lid toggle (F7), fast-mode (F5, optional dev tool). README + install instructions. | Self-documenting demo. |
 
 Working end-to-end demo at phase 6. Phases 7–9 are polish.
@@ -1179,8 +1178,8 @@ Working end-to-end demo at phase 6. Phases 7–9 are polish.
 7. **Build system**: browser bundle is committed directly as `dist/index.js` (a small hand-authored IIFE). React comes from
    `window.__HERMES_PLUGIN_SDK__.React` (external). No server-side build step is
    required in v0.
-8. **Font license**: ship TELE_B.TTF with `LICENSE-TELE_B.txt`; document that
-   the repo MIT license excludes the font.
+8. **Font license**: ship `Teletype33.ttf` with `LICENSE-Teletype33.txt` (CC0
+   1.0 Universal — public-domain dedication).
 9. **Bell source**: no synthetic completion bell. Ring the bell for explicit
    BEL codepoints and for carriage-position margin/end-of-line behavior. The
    default 72-column warning position is `MARGIN_BELL_COLUMN = 68`, documented

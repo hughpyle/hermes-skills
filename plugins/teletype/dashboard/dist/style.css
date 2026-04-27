@@ -1,6 +1,6 @@
 @font-face {
-  font-family: "Teleprinter";
-  src: url("./fonts/TELE_B.TTF");
+  font-family: "Teletype33";
+  src: url("./fonts/Teletype33.ttf");
   font-style: normal;
   font-weight: normal;
   font-display: swap;
@@ -12,7 +12,7 @@
   flex-direction: column;
   gap: 0.75rem;
   min-height: calc(100vh - 5rem);
-  font-family: "Teleprinter", monospace;
+  font-family: "Teletype33", monospace;
   color: #2b2217;
   outline: none;
 }
@@ -39,7 +39,7 @@
   margin: 0 0 0.45rem 0;
   font-size: 0.85rem;
   letter-spacing: 0.12em;
-  text-transform: none;
+  text-transform: uppercase;
 }
 
 .teletype-plugin .teletype-status {
@@ -56,9 +56,10 @@
   border: 1px solid rgba(43, 34, 23, 0.35);
   background: rgba(245, 231, 210, 0.86);
   color: #2b2217;
-  font-family: "Teleprinter", monospace;
+  font-family: "Teletype33", monospace;
   font-size: 0.78rem;
   letter-spacing: 0.12em;
+  text-transform: uppercase;
   padding: 0.2rem 0.45rem;
   border-radius: 0.35rem;
   cursor: pointer;
@@ -66,6 +67,36 @@
 
 .teletype-plugin .teletype-lid-switch.down {
   background: rgba(228, 212, 186, 0.86);
+}
+
+.teletype-plugin .teletype-case-toggle {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid rgba(43, 34, 23, 0.35);
+  background: rgba(245, 231, 210, 0.86);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.teletype-plugin .teletype-case-option {
+  border: 0;
+  background: transparent;
+  color: #2b2217;
+  font-family: "Teletype33", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  cursor: pointer;
+  opacity: 0.55;
+}
+
+.teletype-plugin .teletype-case-option.active {
+  background: rgba(43, 34, 23, 0.85);
+  color: #f5e7d2;
+  opacity: 1;
 }
 
 .teletype-plugin .teletype-canvas-wrap {
@@ -93,7 +124,7 @@
   border: 1px solid rgba(43, 34, 23, 0.35);
   background: rgba(245, 231, 210, 0.84);
   color: #2b2217;
-  font-family: "Teleprinter", monospace;
+  font-family: "Teletype33", monospace;
   font-size: 0.82rem;
   letter-spacing: 0.16em;
   padding: 0.4rem 0.8rem;

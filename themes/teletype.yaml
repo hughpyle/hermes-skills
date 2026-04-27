@@ -1,6 +1,6 @@
 name: teletype
 label: Teletype
-description: ASR-33 paper roll with ink-on-beige and Teleprinter font.
+description: ASR-33 paper roll with ink-on-beige and Teletype33 font.
 palette:
   background:
     hex: "#FFEEDD"
@@ -14,9 +14,9 @@ palette:
   warmGlow: "rgba(120, 90, 60, 0.15)"
   noiseOpacity: 0.4
 typography:
-  fontSans: '"Teleprinter", monospace'
-  fontMono: '"Teleprinter", monospace'
-  fontDisplay: '"Teleprinter", monospace'
+  fontSans: '"Teletype33", monospace'
+  fontMono: '"Teletype33", monospace'
+  fontDisplay: '"Teletype33", monospace'
   fontUrl: "/dashboard-plugins/teletype/dist/fonts/teleprinter.css"
   baseSize: "16px"
   lineHeight: "1.4"

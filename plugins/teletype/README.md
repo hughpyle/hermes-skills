@@ -65,6 +65,6 @@ printing corrupted marker text.
 
 ## Licensing
 
-`dashboard/dist/fonts/TELE_B.TTF` is copyright Mark Zanzig (1995), free for
-personal use. `dashboard/dist/fonts/LICENSE-TELE_B.txt` documents that the plugin
-license file applies only to code, not to font usage.
+`dashboard/dist/fonts/Teletype33.ttf` is released under CC0 1.0 Universal
+(public domain dedication); see `dashboard/dist/fonts/LICENSE-Teletype33.txt`.
+Source: https://github.com/hughpyle/Teletype33-Font
