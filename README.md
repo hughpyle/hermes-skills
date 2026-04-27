@@ -10,7 +10,7 @@ If you have a *real* Teletype ASR33, you can use the [hermes-shell](https://gith
 as the back-end, which provides a command-line shell that you can use
 with `getty` for interactive login.
 
-<video src="wave.mov" controls="controls" width="100%"></video>
+https://github.com/user-attachments/assets/34d6fc69-453b-4dad-8b70-d4ca6e930598
 
 ## Using this repo with Hermes
 
