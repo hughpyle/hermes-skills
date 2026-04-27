@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+import base64
+import binascii
 import os
 from collections import deque
 import re
 import textwrap
 import time
+import typing
 import unicodedata
 import uuid
 from pathlib import Path
@@ -173,6 +176,61 @@ def wrap_text(text: str, width: int) -> str:
 def normalize_newlines_for_teletype(text: str) -> str:
     text = text.replace("\r\n", "\n")
     return text.replace("\n", "\r\n")
+
+
+_BINARY_BLOCK_RE = re.compile(
+    r"(?s)(<BINARY>\s*(.*?)\s*</BINARY>|<<BINARY>>\s*(.*?)\s*<</BINARY>>)",
+    re.IGNORECASE,
+)
+
+
+class OutputSegment(typing.NamedTuple):
+    kind: str  # "text" or "raw"
+    data: str
+
+
+def _is_allowed_output_byte(value: int) -> bool:
+    return value in (0x07, 0x08, 0x09, 0x0A, 0x0C, 0x0D) or 0x20 <= value <= 0x7E
+
+
+def _decode_binary_payload(payload: str) -> str:
+    compact = re.sub(r"\s+", "", payload)
+    try:
+        raw = base64.b64decode(compact, validate=True)
+    except (binascii.Error, ValueError) as exc:
+        raise ValueError("invalid binary block base64") from exc
+    bad = [byte for byte in raw if not _is_allowed_output_byte(byte)]
+    if bad:
+        raise ValueError("binary block contains unsupported control bytes")
+    return raw.decode("ascii")
+
+
+def split_output_segments(text: str) -> list[OutputSegment]:
+    segments: list[OutputSegment] = []
+    pos = 0
+    for match in _BINARY_BLOCK_RE.finditer(text):
+        if match.start() > pos:
+            segments.append(OutputSegment("text", text[pos:match.start()]))
+        payload = match.group(2) if match.group(2) is not None else match.group(3)
+        segments.append(OutputSegment("raw", _decode_binary_payload(payload or "")))
+        pos = match.end()
+    if pos < len(text):
+        segments.append(OutputSegment("text", text[pos:]))
+    return segments
+
+
+def format_text_for_teletype(text: str, preserve_trailing_newlines: bool = False) -> str:
+    text = ascii_sanitize(text)
+    trailing_lfs = len(text) - len(text.rstrip("\n")) if preserve_trailing_newlines else 0
+    output = normalize_newlines_for_teletype(wrap_text(text, _COLUMNS))
+    if trailing_lfs:
+        missing = trailing_lfs - (len(output) - len(output.rstrip("\n")))
+        if output and not output.endswith("\r\n"):
+            output += "\r\n"
+            missing -= 1
+        if missing > 0:
+            output += "\r\n" * missing
+    return output
 
 
 def get_or_create_session(session_id: str) -> TtySession:
@@ -348,6 +406,22 @@ async def _enqueue_print_char(state: TtySession, ch: str) -> bool:
         return False
 
 
+async def _enqueue_assistant_output(state: TtySession, text: str) -> bool:
+    segments = split_output_segments(text)
+    for segment in segments:
+        if segment.kind == "raw":
+            output = segment.data
+        else:
+            output = format_text_for_teletype(
+                segment.data,
+                preserve_trailing_newlines=segment is not segments[-1],
+            )
+        for ch in output:
+            if not await _enqueue_print_char(state, ch):
+                return False
+    return True
+
+
 async def _enqueue_prompt(state: TtySession) -> bool:
     if state.prompt_pending:
         return True
@@ -428,14 +502,19 @@ async def _await_then_call(
             state.llm_task = None
         return
 
-    text = ascii_sanitize(text)
-    text = normalize_newlines_for_teletype(wrap_text(text, _COLUMNS))
-    for ch in text:
-        if not await _enqueue_print_char(state, ch):
-            if state.llm_task is current_task:
-                state.llm_task = None
-            await send_status(state, "ready")
-            return
+    try:
+        ok = await _enqueue_assistant_output(state, text)
+    except ValueError as exc:
+        await send_error(state, str(exc).split("\n", 1)[0])
+        await send_status(state, "ready")
+        if state.llm_task is current_task:
+            state.llm_task = None
+        return
+    if not ok:
+        if state.llm_task is current_task:
+            state.llm_task = None
+        await send_status(state, "ready")
+        return
     for ch in ("\r", "\n"):
         if not await _enqueue_print_char(state, ch):
             if state.llm_task is current_task:

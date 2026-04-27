@@ -38,6 +38,31 @@ session ID for continuity and requires `API_SERVER_KEY`:
 Without `API_SERVER_KEY`, the plugin still echoes input but cannot resume sessions
 with `X-Hermes-Session-Id`.
 
+## Binary output blocks
+
+Assistant replies may include base64 blocks for byte-accurate teletype output:
+
+```text
+<BINARY>
+BASE64...
+</BINARY>
+```
+
+or:
+
+```text
+<<BINARY>>
+BASE64...
+<</BINARY>>
+```
+
+The backend decodes these blocks and sends the resulting ASCII/control bytes
+straight to the printer queue, bypassing wrapping, Unicode sanitizing, and LF to
+CRLF normalization. This is intended for CR-only overstrike art and similar
+paper-tape-style byte streams. Decoded bytes are limited to printable ASCII plus
+BEL, BS, TAB, LF, FF, and CR; malformed blocks report an error instead of
+printing corrupted marker text.
+
 ## Licensing
 
 `dashboard/dist/fonts/TELE_B.TTF` is copyright Mark Zanzig (1995), free for

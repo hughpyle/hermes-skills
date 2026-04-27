@@ -27,6 +27,12 @@ does not advance the paper, it only returns the carriage to the left.  Print one
 
 Ready-to-print images (text files with CR and CR/LF) are in the `images` direectory of this skill.
 
+Pitfall: do not reconstruct overstrike art from line-numbered or rendered text; CR-only separators can be corrupted or omitted. Print from raw prepared bytes, preserving CR characters exactly. If chat delivery drops overstrikes after a few lines, retry in smaller chunks or use the dashboard binary path.
+
+For Hugh's `/Users/hugh/play/tty-skills` dashboard teletype plugin, the robust byte-accurate path is base64 binary blocks: wrap raw prepared bytes in `<BINARY>...</BINARY>` or `<<BINARY>>...<</BINARY>>`. The dashboard/backend plugin must parse the markers, base64-decode, validate allowed teletype bytes, and enqueue decoded bytes raw. Decoded binary segments must bypass wrapping, Unicode sanitizing, and LF-to-CRLF normalization so CR-only overstrikes survive. The plain terminal/chat stream does not interpret these wrappers by itself.
+
+After changing dashboard plugin Python, for example `plugins/teletype/dashboard/plugin_api.py`, restart the dashboard process. `/api/dashboard/plugins/rescan` can refresh plugin discovery/assets but does not prove Python route code reload.
+
 ### ART1
 
 In the late 1960s, Katherine Nash, a sculptor at the University of Minnesota, and Richard H. Williams, a computer scientist, created ART 1 — a generative program designed to be used by artists, not programmers. Published in the journal Leonardo in 1970, ART 1 allowed an artist to define a small vocabulary of characters and a set of rules for their arrangement, then let the computer compose an image on the lineprinter.

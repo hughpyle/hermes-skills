@@ -309,8 +309,9 @@ same as hsh unless noted:
 ### `system_prompt.txt`
 
 Adapted from `~/play/hermes-shell/hermes_shell/system_prompt.txt`. Drop the
-`<<FILE>>`/`<<BINARY>>` markers and the asr33 repo references — those don't
-work in browser. Keep:
+`<<FILE>>` marker and asr33 repo references. The backend now supports
+`<BINARY>` and `<<BINARY>>` base64 output markers after the model response is
+received, decoding them to raw teletype bytes before the printer queue. Keep:
 
 - "operating through a hardcopy teletype terminal"
 - "plain ASCII only, wrapped to {columns} columns"
