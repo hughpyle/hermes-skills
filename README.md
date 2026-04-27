@@ -3,8 +3,9 @@
 Teletype ASR33 was the original terminal for Unix. The first ASCII machine.
 Mechanical keyboard and printer, a legacy of the telegraph age.
 
-This repo contains skills, and a custom theme and dashboard, for using
-Hermes Agent as a Teletype ASR33 emulator.
+This repo contains skills, and a custom theme and dashboard, for talking to
+Hermes Agent using a Teletype Model 33 emulator.  It includes audio recordings
+from a restored Teletype.
 
 Video (sound on!):
 
@@ -34,7 +35,9 @@ A Hermes dashboard plugin (`plugins/teletype`) and matching theme
 (`themes/teletype.yaml`) that turn the dashboard into a Model 33 ASR
 teletype: 72-column uppercase paper roll, 10 cps electromechanical
 printing with motor hum, key clack, print clack, carriage-return
-thunk, and margin bell. Chat is bridged to the local Hermes API
+thunk, and margin bell.  Oil smells are not included.
+
+Chat is bridged to the local Hermes API
 server via `/v1/chat/completions`; replies come back as plain ASCII
 and are released into the printer's mechanical 10 cps queue.
 
