@@ -1101,6 +1101,10 @@ class PaperRoll {
           this.onStatus(msg.state);
           return;
         }
+        if (msg.t === "gateway_status" && typeof msg.state === "string") {
+          this.onStatus(`gateway_${msg.state}`);
+          return;
+        }
         if (msg.t === "error" && typeof msg.msg === "string") {
           this.onError(msg.msg);
         }
@@ -1266,6 +1270,7 @@ class PaperRoll {
     const [connectionState, setConnectionState] = useState(() => {
       return runtimeState.socket && runtimeState.socket.connected ? "connected" : "disconnected";
     });
+    const [gatewayState, setGatewayState] = useState("checking");
     const [printing, setPrinting] = useState(() => {
       return runtimeState.queue ? runtimeState.queue.printing : false;
     });
@@ -1288,7 +1293,14 @@ class PaperRoll {
       terminalModeRef.current = terminalMode;
     }, [terminalMode]);
 
-    const statusLabel = backendThinking ? "thinking" : printing ? "printing" : connectionState || "idle";
+    const gatewayLabel = gatewayState === "connected"
+      ? "connected"
+      : gatewayState === "missing_key"
+        ? "missing key"
+        : gatewayState === "checking"
+          ? "checking"
+          : "disconnected";
+    const statusLabel = backendThinking ? "thinking" : printing ? "printing" : gatewayLabel;
     const noop = useCallback(() => {}, []);
 
     const ensureAudioStarted = useCallback(() => {
@@ -1376,8 +1388,15 @@ class PaperRoll {
 
     const onStatus = useCallback((state) => {
       isConnectedRef.current = state === "ready" || state === "connected";
+      if (state.startsWith("gateway_")) {
+        const nextGatewayState = state.slice("gateway_".length) || "disconnected";
+        setGatewayState(nextGatewayState);
+        if (nextGatewayState === "connected") {
+          setError("");
+        }
+        return;
+      }
       if (state === "ready") {
-        setConnectionState("connected");
         setError("");
         setBackendThinking(false);
         window.requestAnimationFrame(() => {
@@ -1456,6 +1475,32 @@ class PaperRoll {
       setError(msg);
     }, []);
 
+    const refreshGatewayStatus = useCallback(async () => {
+      try {
+        const response = await window.fetch("/api/plugins/teletype/tty/gateway-status");
+        if (!response.ok) {
+          throw new Error(`gateway status failed: ${response.status}`);
+        }
+        const payload = await response.json();
+        if (payload && typeof payload.state === "string") {
+          setGatewayState(payload.state);
+          if (payload.state === "connected") {
+            setError("");
+          }
+          return;
+        }
+      } catch (_err) {
+        // The dashboard plugin API itself is unavailable or reloading.
+      }
+      setGatewayState("disconnected");
+    }, []);
+
+    useEffect(() => {
+      refreshGatewayStatus();
+      const interval = window.setInterval(refreshGatewayStatus, 5000);
+      return () => window.clearInterval(interval);
+    }, [refreshGatewayStatus]);
+
     const clearSession = useCallback(async () => {
       setError("");
       setBackendThinking(false);
@@ -1511,7 +1556,7 @@ class PaperRoll {
         if (event.metaKey || event.altKey || event.key === "Shift" || event.key === "Control" || event.key === "Alt") {
           return;
         }
-        if (event.ctrlKey && event.key.toLowerCase() === "c") {
+        if (terminalModeRef.current !== "local" && event.ctrlKey && event.key.toLowerCase() === "c") {
           event.preventDefault();
           interruptPrintout();
           return;

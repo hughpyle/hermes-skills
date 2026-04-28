@@ -29,6 +29,7 @@ _LINE_ACC_LIMIT = 4096
 _PRINT_QUEUE_LIMIT = 65536
 _TRANSCRIPT_LIMIT = 200_000
 _SESSION_ID_LENGTH = 32
+_GATEWAY_PROBE_TIMEOUT_SECONDS = 1.5
 
 _HERMES_DIR = Path.home() / ".hermes"
 _HERMES_CONFIG = _HERMES_DIR / "config.yaml"
@@ -293,6 +294,49 @@ async def send_status(state: TtySession, value: str) -> None:
         logger.debug("teletype: status send failed (%s): %s", value, exc)
 
 
+async def probe_gateway() -> dict[str, typing.Any]:
+    url, api_key = detect_gateway()
+    try:
+        async with httpx.AsyncClient(timeout=_GATEWAY_PROBE_TIMEOUT_SECONDS) as client:
+            response = await client.get(f"{url}/health/detailed")
+            if response.status_code >= 500:
+                response = await client.get(f"{url}/health")
+    except httpx.RequestError as exc:
+        return {
+            "ok": False,
+            "state": "disconnected",
+            "url": url,
+            "api_key": bool(api_key),
+            "error": str(exc).split("\n", 1)[0],
+        }
+    except Exception as exc:
+        return {
+            "ok": False,
+            "state": "error",
+            "url": url,
+            "api_key": bool(api_key),
+            "error": str(exc).split("\n", 1)[0],
+        }
+
+    state = "connected" if api_key else "missing_key"
+    return {
+        "ok": state == "connected",
+        "state": state,
+        "url": url,
+        "api_key": bool(api_key),
+        "status_code": response.status_code,
+    }
+
+
+async def send_gateway_status(state: TtySession) -> None:
+    if not _is_ws_connected(state.ws):
+        return
+    try:
+        await state.ws.send_json({"t": "gateway_status", **await probe_gateway()})
+    except Exception as exc:
+        logger.debug("teletype: gateway status send failed: %s", exc)
+
+
 async def send_error(state: TtySession, msg: str) -> None:
     if not _is_ws_connected(state.ws):
         return
@@ -508,6 +552,7 @@ async def _await_then_call(
         text = await _call_completions(state.session_id, prompt)
     except Exception as exc:
         await send_error(state, str(exc).split("\n", 1)[0])
+        await send_gateway_status(state)
         await send_status(state, "ready")
         if state.llm_task is current_task:
             state.llm_task = None
@@ -557,6 +602,7 @@ async def tty_ws(ws: WebSocket, session: str | None = None):
     state.last_seen = time.monotonic()
     await _ensure_prompt(state)
     await send_status(state, "ready")
+    await send_gateway_status(state)
 
     pump = asyncio.create_task(_pump_outbound(ws, state))
     try:
@@ -627,6 +673,11 @@ async def tty_ws(ws: WebSocket, session: str | None = None):
         if state.ws is ws:
             state.ws = None
         state.last_seen = time.monotonic()
+
+
+@router.get("/tty/gateway-status")
+async def tty_gateway_status():
+    return await probe_gateway()
 
 
 @router.post("/tty/clear")

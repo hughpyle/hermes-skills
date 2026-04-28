@@ -71,7 +71,8 @@ Other key bindings worth knowing:
   to the paper since the 33 has no physical backspace mechanism.
 - `Ctrl+G`: send BEL (rings the bell, no print).
 - `Ctrl+L`: send FF (form feed; clears the paper viewport).
-- `Ctrl+C`: interrupt an in-flight assistant printout.
+- `Ctrl+C`: interrupt an in-flight assistant printout in `LINE` mode; in
+  `LOCAL` mode it prints `c`.
 
 Typed input is always sent to the backend cleanly — no case folding at
 send time. Case folding happens only in the renderer.

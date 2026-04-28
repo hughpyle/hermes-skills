@@ -141,3 +141,86 @@ def test_wave_file_round_trips_through_split_output_segments():
     assert segments[0].kind == "raw"
     assert segments[0].data.encode("ascii") == raw
     assert raw.count(b"\r") > 0
+
+
+def test_gateway_probe_reports_disconnected_on_request_error(monkeypatch):
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return None
+
+        async def get(self, url):
+            raise plugin_api.httpx.RequestError("connection refused")
+
+    monkeypatch.setattr(plugin_api, "detect_gateway", lambda: ("http://127.0.0.1:8642", "secret"))
+    monkeypatch.setattr(plugin_api.httpx, "AsyncClient", FakeClient)
+
+    result = asyncio.run(plugin_api.probe_gateway())
+
+    assert result["ok"] is False
+    assert result["state"] == "disconnected"
+    assert result["url"] == "http://127.0.0.1:8642"
+    assert result["api_key"] is True
+
+
+def test_gateway_probe_reports_missing_key_when_reachable(monkeypatch):
+    calls = []
+
+    class FakeResponse:
+        status_code = 200
+
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return None
+
+        async def get(self, url):
+            calls.append(url)
+            return FakeResponse()
+
+    monkeypatch.setattr(plugin_api, "detect_gateway", lambda: ("http://127.0.0.1:8642", None))
+    monkeypatch.setattr(plugin_api.httpx, "AsyncClient", FakeClient)
+
+    result = asyncio.run(plugin_api.probe_gateway())
+
+    assert result["ok"] is False
+    assert result["state"] == "missing_key"
+    assert result["api_key"] is False
+    assert calls == ["http://127.0.0.1:8642/health/detailed"]
+
+
+def test_gateway_probe_reports_connected_with_key_when_reachable(monkeypatch):
+    class FakeResponse:
+        status_code = 200
+
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return None
+
+        async def get(self, url):
+            return FakeResponse()
+
+    monkeypatch.setattr(plugin_api, "detect_gateway", lambda: ("http://127.0.0.1:8642", "secret"))
+    monkeypatch.setattr(plugin_api.httpx, "AsyncClient", FakeClient)
+
+    result = asyncio.run(plugin_api.probe_gateway())
+
+    assert result["ok"] is True
+    assert result["state"] == "connected"
+    assert result["api_key"] is True
