@@ -44,3 +44,16 @@ customCSS: |
   }
   /* drop the gradient backdrop the standard layout adds */
   [data-layout-variant="standard"] .backdrop { display: none; }
+
+  /* Force Teletype33 onto every element that already wants a monospace
+     glyph set. The dashboard's default rules are more specific than the
+     theme's fontMono variable in many places (cron, code blocks, form
+     fields), so we override here. !important is intentional. */
+  input, textarea, select, button,
+  [role="combobox"], [role="listbox"], [role="textbox"], [role="option"],
+  [contenteditable="true"], [contenteditable=""],
+  code, pre, kbd, samp, tt,
+  .font-mono, .font-monospace,
+  [class*="monospace"], [class*="mono-"] {
+    font-family: "Teletype33", "Courier New", monospace !important;
+  }

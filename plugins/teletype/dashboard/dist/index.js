@@ -1427,7 +1427,6 @@ class PaperRoll {
             const nextSessionId = payload.session;
             browserStorageSet(SESSION_STORAGE_KEY, nextSessionId);
             setSessionId(nextSessionId);
-            runtimeState.sessionId = nextSessionId;
             return;
           }
         }
@@ -1438,7 +1437,6 @@ class PaperRoll {
       const fallbackSessionId = nextSessionId();
       browserStorageSet(SESSION_STORAGE_KEY, fallbackSessionId);
       setSessionId(fallbackSessionId);
-      runtimeState.sessionId = fallbackSessionId;
     }, [sessionId]);
 
     const onKeyDown = useCallback(

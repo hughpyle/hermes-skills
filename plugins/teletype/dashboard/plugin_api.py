@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import binascii
+import logging
 import os
 from collections import deque
 import re
@@ -17,6 +18,7 @@ from contextlib import suppress
 import httpx
 from fastapi import APIRouter, WebSocket
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 _COLUMNS = 72
@@ -138,7 +140,7 @@ def build_system_prompt(columns: int) -> str:
     if _CACHED_SYSTEM_PROMPT is None:
         path = Path(__file__).resolve().parent / "system_prompt.txt"
         _CACHED_SYSTEM_PROMPT = path.read_text()
-    return _CACHED_SYSTEM_PROMPT.format(columns=columns)
+    return _CACHED_SYSTEM_PROMPT.replace("{columns}", str(columns))
 
 
 def ascii_sanitize(text: str) -> str:
@@ -282,13 +284,22 @@ def _is_ws_connected(ws: WebSocket | None) -> bool:
 
 
 async def send_status(state: TtySession, value: str) -> None:
-    if _is_ws_connected(state.ws):
+    if not _is_ws_connected(state.ws):
+        return
+    try:
         await state.ws.send_json({"t": "status", "state": value})
+    except Exception as exc:
+        # Client disappeared between the connected-check and the send.
+        logger.debug("teletype: status send failed (%s): %s", value, exc)
 
 
 async def send_error(state: TtySession, msg: str) -> None:
-    if _is_ws_connected(state.ws):
+    if not _is_ws_connected(state.ws):
+        return
+    try:
         await state.ws.send_json({"t": "error", "msg": msg})
+    except Exception as exc:
+        logger.debug("teletype: error send failed: %s", exc)
 
 
 async def _pump_outbound(ws: WebSocket, state: TtySession) -> None:
