@@ -38,6 +38,23 @@ session ID for continuity and requires `API_SERVER_KEY`:
 Without `API_SERVER_KEY`, the plugin still echoes input but cannot resume sessions
 with `X-Hermes-Session-Id`.
 
+## Dashboard controls
+
+The toolbar at the top of the paper roll has three controls:
+
+- `33` / `37`: typewheel/case mode. `33` (default) emulates the ASR-33's
+  uppercase-only print head — incoming codepoints in 0x60-0x7F are folded
+  down to 0x40-0x5F at render time (`a`→`A`, `` ` ``→`@`, `~`→`^`,
+  `{|}`→`[\]`). `37` allows lowercase, like a Model 37. Setting is
+  persisted in localStorage; the toggle affects future characters only,
+  not text already on the paper.
+- `OPEN LID` / `CLOSE LID`: switches between lid-up and lid-down audio
+  sample sets. Also bound to F7.
+- `CLEAR`: clears the session and starts a fresh paper roll.
+
+Typed input is always sent to the backend cleanly — no case folding at
+send time. Case folding happens only in the renderer.
+
 ## Binary output blocks
 
 Assistant replies may include base64 blocks for byte-accurate teletype output:
@@ -65,6 +82,7 @@ printing corrupted marker text.
 
 ## Licensing
 
-`dashboard/dist/fonts/Teletype33.ttf` is released under CC0 1.0 Universal
-(public domain dedication); see `dashboard/dist/fonts/LICENSE-Teletype33.txt`.
-Source: https://github.com/hughpyle/Teletype33-Font
+`dashboard/dist/fonts/Teletype33.ttf` (by progs-n-things) is released under
+CC0 1.0 Universal (public domain dedication); see
+`dashboard/dist/fonts/LICENSE-Teletype33.txt`.
+Source: https://github.com/progs-n-things/Teletype33-Font

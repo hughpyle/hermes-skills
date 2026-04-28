@@ -1,3 +1,16 @@
+Teletype33 font - license note
+==============================
+
+Font file: Teletype33.ttf
+Creator:   progs-n-things
+Upstream:  https://github.com/progs-n-things/Teletype33-Font
+License:   CC0 1.0 Universal (public-domain dedication, full text below)
+
+The repository root MIT license does not apply to this font file; the
+font is released under CC0 by its author.
+
+----------------------------------------------------------------------
+
 Creative Commons Legal Code
 
 CC0 1.0 Universal

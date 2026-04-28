@@ -273,7 +273,14 @@
         this.timer = null;
         return;
       }
-      const ch = item.ch;
+      let ch = item.ch;
+      // ASR-33 renders backspace as "^H" (no physical mechanism). Spread it
+      // across two ticks so it takes 200ms at 10cps, like any other pair of
+      // printable characters.
+      if (ch === "\b" && this.renderer && this.renderer.caseMode === "33") {
+        this.buf.unshift({ ch: "H", holdInput: false });
+        ch = "^";
+      }
       if (item.holdInput) {
         this.holdInputCount = Math.max(0, this.holdInputCount - 1);
       }
@@ -379,6 +386,16 @@ class PaperRoll {
       this.caseMode = mode === "37" ? "37" : "33";
     }
 
+    _placePrintable(rendered) {
+      const row = this.rows[this.rowIdx];
+      row.placeChar(this.col, rendered);
+      const next = Math.min(COLUMNS - 1, this.col + 1);
+      const event = this.maybeBellForward(this.col, next);
+      this.col = next;
+      this._dirty = true;
+      return event;
+    }
+
     setCanvas(canvas) {
       if (!canvas) {
         return;
@@ -454,9 +471,16 @@ class PaperRoll {
         return event;
       }
       if (ch === "\b") {
-        this.col = Math.max(0, this.col - 1);
-        this._dirty = true;
-        return null;
+        if (this.caseMode === "37") {
+          this.col = Math.max(0, this.col - 1);
+          this._dirty = true;
+          return null;
+        }
+        // ASR-33 has no physical backspace mechanism. Render "^H" the way
+        // a Unix host typically echoes Ctrl+H to a 33.
+        const e1 = this._placePrintable("^");
+        const e2 = this._placePrintable("H");
+        return e1 || e2;
       }
       if (ch === "\f") {
         this.rows = [new AbstractLine()];
@@ -471,13 +495,7 @@ class PaperRoll {
         return null;
       }
       if (ch >= " ") {
-        const row = this.rows[this.rowIdx];
-        row.placeChar(this.col, caseFold(ch, this.caseMode === "37"));
-        const next = Math.min(COLUMNS - 1, this.col + 1);
-        event = this.maybeBellForward(this.col, next);
-        this.col = next;
-        this._dirty = true;
-        return event;
+        return this._placePrintable(caseFold(ch, this.caseMode === "37"));
       }
       return null;
     }
@@ -618,6 +636,11 @@ class PaperRoll {
       this.charsSrc = null;
       this.loopStopHandle = null;
       this.master = null;
+      // Bell ring-out hold: when a typed BEL plays, defer fadeToHum until
+      // the bell sample has finished decaying so the hum loop doesn't mask
+      // the tail. Cleared by any subsequent print event.
+      this.bellHoldUntil = 0;
+      this.bellHoldTimer = null;
     }
 
     async start() {
@@ -774,9 +797,35 @@ class PaperRoll {
     }
 
     fadeToHum() {
+      if (!this.ctx) {
+        return;
+      }
+      const remaining = this.bellHoldUntil - this.ctx.currentTime;
+      if (remaining > 0) {
+        if (!this.bellHoldTimer) {
+          this.bellHoldTimer = window.setTimeout(() => {
+            this.bellHoldTimer = null;
+            this.bellHoldUntil = 0;
+            this._doFadeToHum();
+          }, remaining * 1000);
+        }
+        return;
+      }
+      this._doFadeToHum();
+    }
+
+    _doFadeToHum() {
       this.fade(this.humGain, 1);
       this.fade(this.spacesGain, 0);
       this.fade(this.charsGain, 0);
+    }
+
+    _clearBellHold() {
+      this.bellHoldUntil = 0;
+      if (this.bellHoldTimer) {
+        window.clearTimeout(this.bellHoldTimer);
+        this.bellHoldTimer = null;
+      }
     }
 
     fadeToSpaces() {
@@ -795,17 +844,23 @@ class PaperRoll {
       if (!this.started || !this.ctx) {
         return;
       }
-      if (nextCh === "\r") {
-        this.fadeToSpaces();
-        this._playEffect(this._name(`cr-0${randInt(1, 3)}`));
-        this.syncLoops(10);
-        return;
-      }
       if (nextCh === "\x07") {
+        this._clearBellHold();
         this.fade(this.humGain, 0);
         this.fade(this.spacesGain, 0);
         this.fade(this.charsGain, 0);
         this._playEffect(this._name("bell"));
+        const buf = this.buffers[this._name("bell")];
+        this.bellHoldUntil = this.ctx.currentTime + (buf ? buf.duration : 0);
+        return;
+      }
+      // Any non-bell upcoming char ends the bell hold; the user has accepted
+      // that print events may mute a still-ringing bell.
+      this._clearBellHold();
+      if (nextCh === "\r") {
+        this.fadeToSpaces();
+        this._playEffect(this._name(`cr-0${randInt(1, 3)}`));
+        this.syncLoops(10);
         return;
       }
       if (nextCh === " " || nextCh < " ") {
@@ -1016,12 +1071,13 @@ class PaperRoll {
         this.connected = false;
         this.connecting = false;
         this.onStatus("disconnected");
+        if (this.closed) {
+          // Deliberate close (e.g. clearSession or session swap); no error.
+          return;
+        }
         if (typeof event === "object" && event.code && event.code !== 1000) {
           const reason = `${event.reason || "connection closed"} (${this.endpoint})`;
           this.onError(`WebSocket closed (${event.code || "n/a"}): ${reason}`);
-        }
-        if (this.closed) {
-          return;
         }
         this.scheduleReconnect();
       });
@@ -1029,10 +1085,10 @@ class PaperRoll {
         this.connected = false;
         this.connecting = false;
         this.onStatus("disconnected");
-        this.onError(`WebSocket error: failed to connect to ${this.endpoint}`);
         if (this.closed) {
           return;
         }
+        this.onError(`WebSocket error: failed to connect to ${this.endpoint}`);
         this.scheduleReconnect();
       });
     }
@@ -1653,7 +1709,7 @@ class PaperRoll {
                   type: "button",
                   className: `teletype-case-option ${caseMode === "33" ? "active" : ""}`,
                   "aria-pressed": caseMode === "33",
-                  title: "model 33: uppercase only",
+                  title: "Model 33: uppercase only",
                   onClick: () => setCaseModeValue("33"),
                 },
                 "33"
@@ -1664,7 +1720,7 @@ class PaperRoll {
                   type: "button",
                   className: `teletype-case-option ${caseMode === "37" ? "active" : ""}`,
                   "aria-pressed": caseMode === "37",
-                  title: "model 37: lowercase allowed",
+                  title: "Model 37: lowercase allowed",
                   onClick: () => setCaseModeValue("37"),
                 },
                 "37"
@@ -1676,8 +1732,8 @@ class PaperRoll {
                 type: "button",
                 className: `teletype-lid-switch ${lid}`,
                 "aria-pressed": lid === "down",
-                "aria-label": lid === "up" ? "close lid" : "open lid",
-                title: lid === "up" ? "close lid" : "open lid",
+                "aria-label": lid === "up" ? "click to close the lid" : "click to open the lid",
+                title: lid === "up" ? "Click to close the lid" : "Click to open the lid",
                 onClick: toggleLid,
               },
               lid === "up" ? "close lid" : "open lid"
@@ -1688,7 +1744,7 @@ class PaperRoll {
                 type: "button",
                 className: "teletype-lid-switch",
                 onClick: clearSession,
-                title: "clear session",
+                title: "Clear session",
               },
               "clear"
             ),
