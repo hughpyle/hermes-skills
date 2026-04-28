@@ -1,0 +1,66 @@
+
+
+
+
+
+
+
+OOOOOOO OOOOOOOOO OOOOOOOO OOOOOOO O ******* ******** ********* *******                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOO OOOOOOOOO OOOOOOOO OOOOOOO OO* ******* ******** ********* ******                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOO OOOOOOOOO OOOOOOOO OOOOOOO OOO** ******* ******** ********* *****                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOO OOOOOOOOO OOOOOOOO OOOOOOO OOOO*** ******* ******** ********* ****                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOO OOOOOOOOO OOOOOOOO OOOOOOO OOOOO**** ******* ******** ********* ***                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OO OOOOOOOOO OOOOOOOO OOOOOOO OOOOOO***** ******* ******** ********* **                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+O OOOOOOOOO OOOOOOOO OOOOOOO OOOOOO ****** ******* ******** ********* *                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+ OOOOOOOOO OOOOOOOO OOOOOOO OOOOOO O ****** ******* ******** *********                                     OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOO OOOOOOOO OOOOOOO OOOOOO OO* ****** ******* ******** *********                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOO OOOOOOOO OOOOOOO OOOOOO OOO** ****** ******* ******** ********                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOO OOOOOOOO OOOOOOO OOOOOO OOOO*** ****** ******* ******** *******                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOO OOOOOOOO OOOOOOO OOOOOO OOOOO**** ****** ******* ******** ******                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOO OOOOOOOO OOOOOOO OOOOOO OOOOO ***** ****** ******* ******** *****                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOO OOOOOOOO OOOOOOO OOOOOO OOOOO O ***** ****** ******* ******** ****                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOO OOOOOOOO OOOOOOO OOOOOO OOOOO OO* ***** ****** ******* ******** ***                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OO OOOOOOOO OOOOOOO OOOOOO OOOOO OOO** ***** ****** ******* ******** **                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+O OOOOOOOO OOOOOOO OOOOOO OOOOO OOOO*** ***** ****** ******* ******** *                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+ OOOOOOOO OOOOOOO OOOOOO OOOOO OOOO **** ***** ****** ******* ********                                     OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOO OOOOOOO OOOOOO OOOOO OOOO O **** ***** ****** ******* ********                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOO OOOOOOO OOOOOO OOOOO OOOO OO* **** ***** ****** ******* *******                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOO OOOOOOO OOOOOO OOOOO OOOO OOO** **** ***** ****** ******* ******                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOO OOOOOOO OOOOOO OOOOO OOOO OOO *** **** ***** ****** ******* *****                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOO OOOOOOO OOOOOO OOOOO OOOO OOO O *** **** ***** ****** ******* ****                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOO OOOOOOO OOOOOO OOOOO OOOO OOO OO* *** **** ***** ****** ******* ***                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OO OOOOOOO OOOOOO OOOOO OOOO OOO OOO** *** **** ***** ****** ******* **                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+'''O'''''''O''''''O'''''O''''O'''O'' *   *    *     *      *       *                                       OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+''''O'''''''O''''''O'''''O''''O'''O'*   *    *     *      *       *                                        OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+'''''O'''''''O''''''O'''''O''''O'''O   *    *     *      *       *                                         OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+''''''O'''''''O''''''O'''''O''''O'''O *    *     *      *       *                                          OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+'''''''O'''''''O''''''O'''''O''''O'' *    *     *      *       *                                           OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+''''''''O'''''''O''''''O'''''O''''O'*    *     *      *       *                                            OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+O''''''''O'''''''O''''''O'''''O''''O    *     *      *       *        *                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+'O''''''''O'''''''O''''''O'''''O''''O  *     *      *       *        *                                     OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+''O''''''''O'''''''O''''''O'''''O'''  *     *      *       *        *                                      OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+'''O''''''''O'''''''O''''''O'''''O'' *     *      *       *        *                                       OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+''''O''''''''O'''''''O''''''O'''''O'*     *      *       *        *                                        OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+'''''O''''''''O'''''''O''''''O'''''O     *      *       *        *                                         OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+''''''O''''''''O'''''''O''''''O'''''O   *      *       *        *                                          OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+'''''''O''''''''O'''''''O''''''O''''   *      *       *        *                                           OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+''''''''O''''''''O'''''''O''''''O'''  *      *       *        *                                            OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+'''''''''O''''''''O'''''''O''''''O'' *      *       *        *                                             OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+O'''''''''O''''''''O'''''''O''''''O'*      *       *        *         *                                    OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+'O'''''''''O''''''''O'''''''O''''''O      *       *        *         *                                     OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+''O'''''''''O''''''''O'''''''O''''''O    *       *        *         *                                      OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+'''O'''''''''O''''''''O'''''''O'''''    *       *        *         *                                       OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+''''O'''''''''O''''''''O'''''''O''''   *       *        *         *                                        OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+'''''O'''''''''O''''''''O'''''''O'''  *       *        *         *                                         OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+''''''O'''''''''O''''''''O'''''''O'' *       *        *         *                                          OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+'''''''O'''''''''O''''''''O'''''''O'*       *        *         *                                           OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+''''''''O'''''''''O''''''''O'''''''O       *        *         *                                            OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
+                      A GOOD LINE IS HARD TO BEAT
+
+
+
+
+
+
+
