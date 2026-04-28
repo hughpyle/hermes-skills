@@ -193,8 +193,12 @@
       if (this.buf.length === 0) {
         return;
       }
+      // Fire the first tick synchronously so the keystroke is heard and
+      // sent without the 100 ms throttle latency. Sustained typing still
+      // throttles to 10 cps because each tick reschedules via
+      // _scheduleNext (setTimeout TICK_MS).
       this.nextTickAt = performance.now();
-      this._scheduleNext();
+      this.tick();
     }
 
     tick() {
@@ -262,7 +266,12 @@
         this.holdInputCount += 1;
       }
       this._notifyPrintingChange(true);
-      this.audio.lookAhead(ch);
+      // Audio look-ahead used to fire here, which made the chars/spaces
+      // loop start at enqueue time — i.e. at the keystroke in line mode,
+      // 100 ms before the actual print. Look-ahead now happens in tick()
+      // right before render so audio and paper land together. Sustained
+      // print bursts still get anticipation via the post-render
+      // lookAhead(buf[0]) inside tick().
       this.start();
     }
 
@@ -271,7 +280,10 @@
         return;
       }
       this.printing = true;
-      this.nextTickAt = performance.now();
+      // Extra slack on the first tick after idle so the keystroke ->
+      // server -> echo -> paper round-trip feels like a Model 33 print
+      // head winding up, not an instant remote echo.
+      this.nextTickAt = performance.now() + 20;
       this._scheduleNext();
     }
 
@@ -293,6 +305,12 @@
       if (item.holdInput) {
         this.holdInputCount = Math.max(0, this.holdInputCount - 1);
       }
+      // Engage the right audio loop at print time, not at enqueue time.
+      // For the first char in a burst this aligns the chars/spaces loop
+      // start with the visible print; for subsequent chars the previous
+      // tick's post-render lookAhead has already anticipated this and
+      // the call here is idempotent.
+      this.audio.lookAhead(ch);
       const output = this.renderer.outputChar(ch);
       const event = output && typeof output === "object" && "event" in output
         ? output.event
@@ -1235,6 +1253,7 @@ class PaperRoll {
     const [sessionId, setSessionId] = useState(() => getSessionId());
     const transcriptLoadedRef = useRef(false);
     const pendingOutRef = useRef([]);
+    const localFadeTimerRef = useRef(null);
     const engineRef = useRef(null);
     const queueRef = useRef(null);
     const socketRef = useRef(null);
@@ -1532,15 +1551,40 @@ class PaperRoll {
 
       const sendKey = (ch) => {
         if (terminalModeRef.current === "local") {
-          // Local mode: echo straight into the print queue, no server. CR
-          // is *just* CR — it returns the carriage to column 0 without
-          // advancing the line, like a real teletype keyboard. To start a
-          // new line the operator sends LF separately (Ctrl+J).
-          const queue = queueRef.current;
-          if (!queue) {
+          // Local mode: render synchronously, bypassing the print queue's
+          // 10 cps throttle. On a real Model 33 the keyboard linkage drives
+          // the printer mechanism directly — there's no buffered delay,
+          // and that's what we want here. CR is *just* CR (no auto-LF);
+          // the operator sends LF separately with Ctrl+J.
+          const paper = paperRef.current;
+          const audio = engineRef.current;
+          if (!paper) {
             return;
           }
-          queue.enqueue(ch, { holdInput: false });
+          if (audio && audio.started) {
+            audio.lookAhead(ch);
+          }
+          const result = paper.outputChar(ch);
+          const event = result && typeof result === "object" && "event" in result
+            ? result.event
+            : result;
+          if (audio && audio.started) {
+            audio.onPrintChar(ch, event);
+            // Without a PrintQueue.stop() to call fadeToHum, the chars /
+            // spaces loop set up by lookAhead would run forever. Restore
+            // idle hum after one print-tick's worth of mechanism sound,
+            // debounced so sustained typing keeps the loop active until
+            // the user pauses.
+            if (localFadeTimerRef.current) {
+              window.clearTimeout(localFadeTimerRef.current);
+            }
+            localFadeTimerRef.current = window.setTimeout(() => {
+              localFadeTimerRef.current = null;
+              if (audio.started) {
+                audio.fadeToHum();
+              }
+            }, 120);
+          }
           return;
         }
         if (socketRef.current) {
