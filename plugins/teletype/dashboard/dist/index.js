@@ -1594,23 +1594,6 @@ class PaperRoll {
       }
       setLidStorage(runtimeState.lid);
 
-      const handleVisibility = () => {
-        const isHidden = document.visibilityState === "hidden";
-        if (isHidden) {
-          queue.pause();
-          keyQueue.pause();
-          audio.pause();
-          return;
-        }
-        queue.resume();
-        keyQueue.resume();
-        audio.resume();
-        if (preferredBootRef.current) {
-          ensureAudioStarted();
-        }
-      };
-      document.addEventListener("visibilitychange", handleVisibility);
-
       const focus = panelRef.current;
       if (focus) {
         focus.focus();
@@ -1620,17 +1603,15 @@ class PaperRoll {
       setPrinting(queue.printing);
       setLid(runtimeState.lid);
 
-      if (document.visibilityState === "hidden") {
-        queue.pause();
-        keyQueue.pause();
-        audio.pause();
-      } else {
-        queue.resume();
-        keyQueue.resume();
-        audio.resume();
-        if (preferredBootRef.current) {
-          ensureAudioStarted();
-        }
+      // Keep the queue/audio running across tab-visibility changes so the
+      // teletype keeps printing and humming in a background tab. setTimeout
+      // throttling will slow the print queue, but Web Audio loops continue
+      // at the audio sample rate regardless.
+      queue.resume();
+      keyQueue.resume();
+      audio.resume();
+      if (preferredBootRef.current) {
+        ensureAudioStarted();
       }
 
       if (preferredBootRef.current && !runtimeState.booted) {
@@ -1639,7 +1620,6 @@ class PaperRoll {
 
     return () => {
         cancelled = true;
-        document.removeEventListener("visibilitychange", handleVisibility);
         socket.setHandlers({
           onOut: noop,
           onStatus: noop,
