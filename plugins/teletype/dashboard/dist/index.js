@@ -754,9 +754,10 @@ class PaperRoll {
       this.humSrc = this._startLoop(this._name("hum"), this.humGain);
       this.spacesSrc = this._startLoop(this._name(`print-spaces-0${randInt(1, 2)}`), this.spacesGain);
       this.charsSrc = this._startLoop(this._name(`print-chars-0${randInt(1, 2)}`), this.charsGain);
-      this.humGain.gain.setValueAtTime(0, this.ctx.currentTime);
-      this.spacesGain.gain.setValueAtTime(0, this.ctx.currentTime);
-      this.charsGain.gain.setValueAtTime(0, this.ctx.currentTime);
+      // Don't reset the gains here. At initial construction they're already
+      // 0 from createGain; on subsequent syncLoops calls (CR thunk, lid
+      // swap) the gains hold the desired state and zeroing them would
+      // silence whatever should be playing — including the idle hum.
     }
 
     _stopLoop(source) {
@@ -1712,16 +1713,34 @@ class PaperRoll {
               )
             ),
             React.createElement(
-              "button",
+              "div",
               {
-                type: "button",
-                className: `teletype-lid-switch ${lid}`,
-                "aria-pressed": lid === "down",
-                "aria-label": lid === "up" ? "click to close the lid" : "click to open the lid",
-                title: lid === "up" ? "Click to close the lid" : "Click to open the lid",
-                onClick: toggleLid,
+                className: "teletype-case-toggle",
+                role: "group",
+                "aria-label": "teletype lid: open or closed",
               },
-              lid === "up" ? "close lid" : "open lid"
+              React.createElement(
+                "button",
+                {
+                  type: "button",
+                  className: `teletype-case-option ${lid === "up" ? "active" : ""}`,
+                  "aria-pressed": lid === "up",
+                  title: "Lid open",
+                  onClick: () => setLidPosition("up"),
+                },
+                "OPEN"
+              ),
+              React.createElement(
+                "button",
+                {
+                  type: "button",
+                  className: `teletype-case-option ${lid === "down" ? "active" : ""}`,
+                  "aria-pressed": lid === "down",
+                  title: "Lid closed",
+                  onClick: () => setLidPosition("down"),
+                },
+                "CLOSED"
+              )
             ),
             React.createElement(
               "button",
