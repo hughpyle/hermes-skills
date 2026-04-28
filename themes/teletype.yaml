@@ -165,6 +165,10 @@ customCSS: |
     .bg-card\/80:has(.font-mono-ui[class*="overflow-auto"][class*="max-h-"]) h3,
     [class*="bg-card"]:has(.font-mono-ui[class*="overflow-auto"][class*="min-h-"]) h3,
     [class*="bg-card"]:has(.font-mono-ui[class*="overflow-auto"][class*="max-h-"]) h3,
+    .bg-card\/80:has(.font-mono-ui[class*="overflow-auto"][class*="min-h-"]) [class*="blend-lighter"],
+    .bg-card\/80:has(.font-mono-ui[class*="overflow-auto"][class*="max-h-"]) [class*="blend-lighter"],
+    [class*="bg-card"]:has(.font-mono-ui[class*="overflow-auto"][class*="min-h-"]) [class*="blend-lighter"],
+    [class*="bg-card"]:has(.font-mono-ui[class*="overflow-auto"][class*="max-h-"]) [class*="blend-lighter"],
     .bg-card\/80:has(.font-mono-ui[class*="overflow-auto"][class*="min-h-"]) svg,
     .bg-card\/80:has(.font-mono-ui[class*="overflow-auto"][class*="max-h-"]) svg,
     [class*="bg-card"]:has(.font-mono-ui[class*="overflow-auto"][class*="min-h-"]) svg,
@@ -172,6 +176,7 @@ customCSS: |
   ):not(.teletype-plugin, .teletype-plugin *) {
     color: #090806 !important;
     stroke: #090806 !important;
+    mix-blend-mode: normal !important;
   }
 
   [data-layout-variant="standard"] :where(
@@ -233,7 +238,11 @@ customCSS: |
     padding: 2px;
     border: 1px solid rgba(43, 34, 23, 0.35);
     border-radius: 0.45rem;
-    background-color: rgba(245, 231, 210, 0.86);
+    /* Off-state track: same greygreen as the chassis background so the
+       light thumb reads clearly against it. The paper colour was used
+       here previously, which made the white thumb invisible inside
+       paper-card backgrounds. */
+    background-color: #C0B9AB;
     box-shadow: none;
   }
 

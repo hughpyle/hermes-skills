@@ -69,12 +69,16 @@
   background: rgba(228, 212, 186, 0.86);
 }
 
+/* Segmented toggle: inactive segments show white-on-greygreen so they
+   read clearly against the paper card; the active segment fills with dark
+   ink and stays white. Squarer corners match the dashboard switch style
+   (0.45rem outer, 0.28rem inner). */
 .teletype-plugin .teletype-case-toggle {
   display: inline-flex;
   align-items: stretch;
   border: 1px solid rgba(43, 34, 23, 0.35);
-  background: rgba(245, 231, 210, 0.86);
-  border-radius: 999px;
+  background: #C0B9AB;
+  border-radius: 0.45rem;
   padding: 2px;
   gap: 2px;
 }
@@ -82,21 +86,30 @@
 .teletype-plugin .teletype-case-option {
   border: 0;
   background: transparent;
-  color: #2b2217;
+  color: #FFFFFF;
   font-family: "Teletype33", monospace;
   font-size: 0.78rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 0.1rem 0.55rem;
-  border-radius: 999px;
+  border-radius: 0.28rem;
   cursor: pointer;
-  opacity: 0.55;
+  opacity: 1;
 }
 
 .teletype-plugin .teletype-case-option.active {
-  background: rgba(43, 34, 23, 0.85);
+  background: #17130E;
   color: #f5e7d2;
   opacity: 1;
+}
+
+.teletype-plugin .teletype-case-option:focus {
+  outline: none;
+}
+
+.teletype-plugin .teletype-case-option:focus-visible {
+  outline: 2px solid #17130E;
+  outline-offset: 1px;
 }
 
 .teletype-plugin .teletype-canvas-wrap {
