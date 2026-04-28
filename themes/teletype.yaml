@@ -57,3 +57,25 @@ customCSS: |
   [class*="monospace"], [class*="mono-"] {
     font-family: "Teletype33", "Courier New", monospace !important;
   }
+
+  /* Left navigation: anything inside the sidebar / nav landmark, plus
+     shadcn's data-sidebar slot. */
+  nav, aside,
+  [role="navigation"],
+  [data-sidebar], [data-slot="sidebar"],
+  [class*="sidebar"], [class*="Sidebar"],
+  nav *, aside *,
+  [role="navigation"] *,
+  [data-sidebar] *, [data-slot="sidebar"] *,
+  [class*="sidebar"] *, [class*="Sidebar"] * {
+    font-family: "Teletype33", monospace !important;
+  }
+
+  /* Page headers and section titles. */
+  h1, h2, h3, h4, h5, h6,
+  [role="heading"],
+  [class*="page-header"], [class*="PageHeader"],
+  [class*="page-title"], [class*="PageTitle"],
+  [data-slot="title"], [data-slot="header"] {
+    font-family: "Teletype33", monospace !important;
+  }
