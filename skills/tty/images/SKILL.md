@@ -41,12 +41,16 @@ Frederick Hammersley (1919–2009) was a painter associated with hard-edge abstr
 
 You can print several recreations of ART1 works by Nash and Hammersley.  Use `art1 -list` to list them.
 Do NOT print "embroid", "lovely_meeting", "quads" or "ripples": these are ANSI terminal art.
-ASCII overstrike works are:
+ASCII overstrike works are: "spheroids", "good_line", "jelly_centers", and "tiddly_winks".
 
-* Spheroids (Nash)
-* A Good Line is Hard To Beat (Hammersley)
-* Jelly Centers (Hammersley)
-* Tiddly Winks (Hammersley).
+These are also available as text files in the `images` directory,
+
+| File | Description |
+| --- | --- |
+| `spheroids.txt` | Spheroids (Nash) |
+| `good_line.txt` | A Good Line is Hard To Beat (Hammersley) |
+| `jelly_centers.txt` | Jelly Centers (Hammersley) |
+| `tiddly_winks.txt` | Tiddly Winks (Hammersley) |
 
 These are very large prints and take a long time.
 
@@ -58,10 +62,10 @@ These are nice and small and pretty.  Many emoji work well.
 | File | Description |
 | --- | --- |
 | `duck.txt` | An emoji duck |
-| `fish.txt` | An emoji fish (this is very pretty) |
-| `shark.txt` | An emoji shark (this is very pretty) |
-| `shell.txt` | An emoji shell (this is very pretty) |
-| --- | --- |
+| `fish.txt` | An emoji fish |
+| `shark.txt` | An emoji shark |
+| `shell.txt` | An emoji shell |
+| `wave.txt` | An emoji wave |
 
 You can generate any emoji using the `hemoji` tool.
 Example: `hemoji wave`.
@@ -75,7 +79,6 @@ These are special and quite large (they take a long time to print).
 | --- | --- |
 | `han_board.txt` | Kanji the classical Zen "Han no Ge" (板の偈) |
 | `pjw.txt` | A picture of Peter J Weinberger from Bell Labs. |
-| --- | --- |
 
 These are generated using the Python scripts in the `asr33` repo:
 
@@ -97,7 +100,6 @@ Prepared pictures in the `asr33` repo include:
 | `dali.jpg.txt` | Salvador Dalí |
 | `mario.png.txt` | Super Mario |
 | `yoda2.png.txt` | Yoda |
-| --- | --- |
 
 See `asciiart/README.md` for more details.
 
