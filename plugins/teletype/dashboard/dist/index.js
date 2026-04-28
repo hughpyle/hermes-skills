@@ -19,6 +19,7 @@
   const BOOTED_STORAGE_KEY = "teletype.booted";
   const BROWSER_LID_KEY = "teletype.lid";
   const BROWSER_CASE_KEY = "teletype.case-mode";
+  const BROWSER_TERMINAL_MODE_KEY = "teletype.mode";
   const BACKOFF_INITIAL_MS = 1000;
   const BACKOFF_MAX_MS = 30000;
 
@@ -110,6 +111,14 @@
 
   function setCaseStorage(value) {
     browserStorageSet(BROWSER_CASE_KEY, value === "37" ? "37" : "33");
+  }
+
+  function getTerminalModeStorage() {
+    return browserStorageGet(BROWSER_TERMINAL_MODE_KEY) === "local" ? "local" : "line";
+  }
+
+  function setTerminalModeStorage(value) {
+    browserStorageSet(BROWSER_TERMINAL_MODE_KEY, value === "local" ? "local" : "line");
   }
 
   function teletypeWsUrl(sessionId, host) {
@@ -410,8 +419,22 @@ class PaperRoll {
     }
 
     setScrollContainer(scrollContainer) {
-      this.scrollContainer = scrollContainer || null;
+      const next = scrollContainer || null;
+      if (this.scrollContainer !== next) {
+        if (this._resizeObserver) {
+          this._resizeObserver.disconnect();
+          this._resizeObserver = null;
+        }
+        this.scrollContainer = next;
+      }
+      if (next && !this._resizeObserver && typeof window !== "undefined" && typeof window.ResizeObserver === "function") {
+        this._resizeObserver = new window.ResizeObserver(() => {
+          this._resize();
+        });
+        this._resizeObserver.observe(next);
+      }
       this._dirty = true;
+      this._resize();
     }
 
     ensureRow(idx) {
@@ -503,19 +526,16 @@ class PaperRoll {
     _resize() {
       const width = this.paddingX * 2 + this.charWidth * COLUMNS;
       const contentHeight = this.paddingY * 2 + this.rows.length * this.lineHeight;
-      const rawViewportHeight = this.scrollContainer
-        ? this.scrollContainer.clientHeight
-        : 320;
-      const minViewportHeight = Math.max(120, this.lineHeight * 3);
-      const viewportHeight = Math.max(rawViewportHeight || 320, minViewportHeight);
-      const needsScroll = contentHeight > viewportHeight;
-      this.drawOffsetY = needsScroll ? 0 : Math.max(0, viewportHeight - contentHeight);
-      const targetHeight = needsScroll ? contentHeight : viewportHeight;
+      // Canvas pixel buffer is sized to the content, no padding for empty
+      // viewport space. Bottom-anchoring is handled by the wrap's flex
+      // layout (margin-top: auto on the canvas). drawOffsetY stays 0; the
+      // last line sits at the canvas-pixel bottom by construction.
+      this.drawOffsetY = 0;
       if (this.canvas.width !== width) {
         this.canvas.width = width;
       }
-      if (this.canvas.height !== targetHeight) {
-        this.canvas.height = targetHeight;
+      if (this.canvas.height !== contentHeight) {
+        this.canvas.height = contentHeight;
       }
       this._dirty = true;
     }
@@ -1183,6 +1203,12 @@ class PaperRoll {
     if (event.ctrlKey && event.key.toLowerCase() === "l") {
       return { ch: "\f" };
     }
+    if (event.ctrlKey && event.key.toLowerCase() === "j") {
+      return { ch: "\n" };
+    }
+    if (event.ctrlKey && event.key.toLowerCase() === "h") {
+      return { ch: "\b" };
+    }
     if (event.key === "Enter") {
       return { ch: "\r" };
     }
@@ -1237,6 +1263,11 @@ class PaperRoll {
       runtimeState.caseMode = persisted;
       return persisted;
     });
+    const [terminalMode, setTerminalMode] = useState(() => getTerminalModeStorage());
+    const terminalModeRef = useRef(terminalMode);
+    useEffect(() => {
+      terminalModeRef.current = terminalMode;
+    }, [terminalMode]);
 
     const statusLabel = backendThinking ? "thinking" : printing ? "printing" : connectionState || "idle";
     const noop = useCallback(() => {}, []);
@@ -1301,7 +1332,18 @@ class PaperRoll {
       }
     }, []);
 
+    const setTerminalModeValue = useCallback((nextMode) => {
+      const normalized = nextMode === "local" ? "local" : "line";
+      setTerminalMode(normalized);
+      setTerminalModeStorage(normalized);
+    }, []);
+
     const ensurePromptAtLineStart = useCallback(() => {
+      // Local mode is keyboard-and-printer only; the server prompt is
+      // suppressed since there's nothing to talk to.
+      if (terminalModeRef.current === "local") {
+        return;
+      }
       const paper = paperRef.current;
       const queue = queueRef.current;
       const socket = socketRef.current;
@@ -1368,6 +1410,11 @@ class PaperRoll {
     }, []);
 
     const onOut = useCallback((ch) => {
+      // In local mode the line is conceptually disconnected; drop server
+      // output so nothing prints from the remote side.
+      if (terminalModeRef.current === "local") {
+        return;
+      }
       if (!booted || preferredBootRef.current) {
         ensureAudioStarted();
       }
@@ -1484,6 +1531,18 @@ class PaperRoll {
       let cancelled = false;
 
       const sendKey = (ch) => {
+        if (terminalModeRef.current === "local") {
+          // Local mode: echo straight into the print queue, no server. CR
+          // is *just* CR — it returns the carriage to column 0 without
+          // advancing the line, like a real teletype keyboard. To start a
+          // new line the operator sends LF separately (Ctrl+J).
+          const queue = queueRef.current;
+          if (!queue) {
+            return;
+          }
+          queue.enqueue(ch, { holdInput: false });
+          return;
+        }
         if (socketRef.current) {
           expectedEchoRef.current += ch === "\r" ? 2 : 1;
           socketRef.current.send(ch);
@@ -1678,10 +1737,42 @@ class PaperRoll {
         React.createElement(
           "div",
           { className: "teletype-toolbar" },
-          React.createElement("div", { className: "teletype-status" }, `status: ${statusLabel}`),
+          terminalMode === "local"
+            ? React.createElement("div", { className: "teletype-status" }, "")
+            : React.createElement("div", { className: "teletype-status" }, `status: ${statusLabel}`),
           React.createElement(
             "div",
             { className: "teletype-toolbar-actions" },
+            React.createElement(
+              "div",
+              {
+                className: "teletype-case-toggle",
+                role: "group",
+                "aria-label": "terminal mode: local echo or line connection",
+              },
+              React.createElement(
+                "button",
+                {
+                  type: "button",
+                  className: `teletype-case-option ${terminalMode === "line" ? "active" : ""}`,
+                  "aria-pressed": terminalMode === "line",
+                  title: "Line: connected to the dashboard agent",
+                  onClick: () => setTerminalModeValue("line"),
+                },
+                "LINE"
+              ),
+              React.createElement(
+                "button",
+                {
+                  type: "button",
+                  className: `teletype-case-option ${terminalMode === "local" ? "active" : ""}`,
+                  "aria-pressed": terminalMode === "local",
+                  title: "Local echo: keystrokes print straight to paper, no remote. Enter sends CR only — use Ctrl+J for LF.",
+                  onClick: () => setTerminalModeValue("local"),
+                },
+                "LOCAL"
+              )
+            ),
             React.createElement(
               "div",
               {

@@ -40,17 +40,38 @@ with `X-Hermes-Session-Id`.
 
 ## Dashboard controls
 
-The toolbar at the top of the paper roll has three controls:
+The toolbar at the top of the paper roll has four controls:
 
+- `LOCAL` / `LINE`: line discipline.
+  - `LINE` (default) connects keystrokes through the WebSocket to the
+    dashboard agent; the server echoes characters, expands `\r` into
+    `\r\n`, and runs the LLM after each line.
+  - `LOCAL` is a local-only loop, like the LCL switch on a real Model 33:
+    keystrokes print straight to paper with no remote round-trip and no
+    automatic prompt. CR is *just* CR — it returns the carriage to
+    column 0 without advancing the line. To start a new line, send LF
+    explicitly with `Ctrl+J`. The WebSocket stays open in the background,
+    so flipping back to `LINE` resumes immediately.
 - `33` / `37`: typewheel/case mode. `33` (default) emulates the ASR-33's
   uppercase-only print head — incoming codepoints in 0x60-0x7F are folded
   down to 0x40-0x5F at render time (`a`→`A`, `` ` ``→`@`, `~`→`^`,
   `{|}`→`[\]`). `37` allows lowercase, like a Model 37. Setting is
   persisted in localStorage; the toggle affects future characters only,
   not text already on the paper.
-- `OPEN LID` / `CLOSE LID`: switches between lid-up and lid-down audio
-  sample sets. Also bound to F7.
+- `OPEN` / `CLOSED`: lid position. Switches between lid-up and lid-down
+  audio sample sets. Also bound to F7.
 - `CLEAR`: clears the session and starts a fresh paper roll.
+
+Other key bindings worth knowing:
+
+- `Ctrl+J`: send LF (line feed) — useful in `LOCAL` mode after CR, and
+  any time you want a bare LF without CR.
+- `Ctrl+H`: send BS (backspace). Equivalent to the Backspace key. On a
+  37 the carriage backspaces mechanically; on a 33 the host echoes `^H`
+  to the paper since the 33 has no physical backspace mechanism.
+- `Ctrl+G`: send BEL (rings the bell, no print).
+- `Ctrl+L`: send FF (form feed; clears the paper viewport).
+- `Ctrl+C`: interrupt an in-flight assistant printout.
 
 Typed input is always sent to the backend cleanly — no case folding at
 send time. Case folding happens only in the renderer.

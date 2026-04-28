@@ -111,12 +111,45 @@
   background-position: center top;
   background-repeat: repeat;
   background-size: 256px 256px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Subtle paper-edge browning, like the spheroids.jpg sample. The overlay
+   uses position: sticky so it stays anchored to the visible viewport even
+   as the paper roll scrolls underneath. radial-gradient gives the corners
+   a slightly heavier wash than the mid-edges. */
+.teletype-plugin .teletype-canvas-wrap::before {
+  content: "";
+  display: block;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin-bottom: -100%;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    linear-gradient(
+      to right,
+      rgba(90, 55, 25, 0.10) 0%,
+      rgba(90, 55, 25, 0.04) 18%,
+      transparent 35%,
+      transparent 65%,
+      rgba(90, 55, 25, 0.04) 82%,
+      rgba(90, 55, 25, 0.10) 100%
+    );
 }
 
 .teletype-plugin .teletype-canvas {
   width: 100%;
   display: block;
   background: transparent;
+  /* Push the canvas to the bottom of the wrap so the latest line sits at
+     the bottom of the visible viewport. When content grows taller than
+     the wrap, overflow scrolls and _draw pins the scroll to the bottom. */
+  margin-top: auto;
 }
 
 .teletype-plugin .teletype-boot {

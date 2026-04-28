@@ -1,16 +1,16 @@
 name: teletype
 label: Teletype
-description: ASR-33 paper roll with ink-on-beige and Teletype33 font.
+description: Teletype-green chassis with ASR-33 paper roll and Teletype33 font.
 palette:
   background:
-    hex: "#FFEEDD"
+    hex: "#C0B9AB"
     alpha: 1.0
   midground:
     hex: "#333333"
     alpha: 1.0
   foreground:
-    hex: "#000000"
-    alpha: 0.0
+    hex: "#090806"
+    alpha: 1.0
   warmGlow: "rgba(120, 90, 60, 0.15)"
   noiseOpacity: 0.4
 typography:
@@ -29,21 +29,361 @@ assets:
   bg: "/dashboard-plugins/teletype/dist/img/paper.png"
 componentStyles:
   page:
-    background-color: "#FFEEDD"
-    color: "#333333"
+    background-color: "#C0B9AB"
+    color: "#090806"
   card:
     background-color: "#FFEEDD"
-    border: "1px solid #d4c4a4"
+    color: "#090806"
+    border: "1px solid #908980"
     box-shadow: "none"
 customCSS: |
-  /* paper texture scrolls with the page (background-attachment: local),
-     so as the paper roll grows the grain moves in lockstep with page motion. */
+  /* Teletype-green chassis. The dashboard body shows the pale sage
+     palette colour; the paper texture lives only inside the plugin's
+     own paper-roll viewport (set in the plugin style.css). */
   body {
-    background-image: var(--theme-asset-bg);
-    background-repeat: repeat;
+    background-color: #C0B9AB;
+    color: #090806;
   }
   /* drop the gradient backdrop the standard layout adds */
   [data-layout-variant="standard"] .backdrop { display: none; }
+
+  /* The sage chassis is darker than the old paper background, so inherited
+     dashboard text needs full ink contrast instead of translucent grays. */
+  [data-layout-variant="standard"],
+  [data-layout-variant="standard"] :where(
+    main,
+    header,
+    nav,
+    aside,
+    section,
+    article,
+    label,
+    p,
+    span
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    color: #090806;
+  }
+
+  [data-layout-variant="standard"] :where(
+    input,
+    textarea,
+    select,
+    button
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    color: #090806;
+  }
+
+  [data-layout-variant="standard"] :where(
+    input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+    textarea,
+    select,
+    [role="combobox"],
+    [role="textbox"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    border: 1px solid rgba(43, 34, 23, 0.35);
+    border-radius: 0.35rem;
+    background-color: rgba(245, 231, 210, 0.92);
+    color: #090806;
+    box-shadow: none;
+  }
+
+  [data-layout-variant="standard"] :where(
+    input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):focus,
+    textarea:focus,
+    select:focus,
+    [role="combobox"]:focus,
+    [role="textbox"]:focus,
+    input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):focus-visible,
+    textarea:focus-visible,
+    select:focus-visible,
+    [role="combobox"]:focus-visible,
+    [role="textbox"]:focus-visible
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    background-color: #F5E7D2;
+    border-color: rgba(43, 34, 23, 0.65);
+    outline: 2px solid #5A3A18;
+    outline-offset: 2px;
+  }
+
+  [data-layout-variant="standard"] :where(
+    input:not(.teletype-plugin *),
+    textarea:not(.teletype-plugin *)
+  )::placeholder {
+    color: #5A4D3F;
+    opacity: 1;
+  }
+
+  [data-layout-variant="standard"] :where(
+    pre,
+    code[class],
+    [role="log"],
+    [id*="agent-log"],
+    [id*="agentLog"],
+    [id*="AgentLog"],
+    [class*="log"],
+    [class*="Log"],
+    [class*="agent-log"],
+    [class*="agentLog"],
+    [class*="AgentLog"],
+    [data-slot*="log"],
+    [data-slot*="Log"],
+    [data-testid*="log"],
+    [data-testid*="Log"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    border: 1px solid rgba(43, 34, 23, 0.35) !important;
+    border-radius: 0.35rem;
+    background: rgba(245, 231, 210, 0.92) !important;
+    background-color: rgba(245, 231, 210, 0.92) !important;
+    color: #090806 !important;
+    box-shadow: none !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    .font-mono-ui[class*="overflow-auto"][class*="min-h-"],
+    .font-mono-ui[class*="overflow-auto"][class*="max-h-"],
+    [class*="font-mono-ui"][class*="overflow-auto"][class*="min-h-"],
+    [class*="font-mono-ui"][class*="overflow-auto"][class*="max-h-"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    background: rgba(245, 231, 210, 0.92) !important;
+    background-color: rgba(245, 231, 210, 0.92) !important;
+    color: #090806 !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    .bg-card\/80:has(.font-mono-ui[class*="overflow-auto"][class*="min-h-"]),
+    .bg-card\/80:has(.font-mono-ui[class*="overflow-auto"][class*="max-h-"]),
+    [class*="bg-card"]:has(.font-mono-ui[class*="overflow-auto"][class*="min-h-"]),
+    [class*="bg-card"]:has(.font-mono-ui[class*="overflow-auto"][class*="max-h-"])
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    background: #FFEEDD !important;
+    background-color: #FFEEDD !important;
+    color: #090806 !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    .bg-card\/80:has(.font-mono-ui[class*="overflow-auto"][class*="min-h-"]) h3,
+    .bg-card\/80:has(.font-mono-ui[class*="overflow-auto"][class*="max-h-"]) h3,
+    [class*="bg-card"]:has(.font-mono-ui[class*="overflow-auto"][class*="min-h-"]) h3,
+    [class*="bg-card"]:has(.font-mono-ui[class*="overflow-auto"][class*="max-h-"]) h3,
+    .bg-card\/80:has(.font-mono-ui[class*="overflow-auto"][class*="min-h-"]) svg,
+    .bg-card\/80:has(.font-mono-ui[class*="overflow-auto"][class*="max-h-"]) svg,
+    [class*="bg-card"]:has(.font-mono-ui[class*="overflow-auto"][class*="min-h-"]) svg,
+    [class*="bg-card"]:has(.font-mono-ui[class*="overflow-auto"][class*="max-h-"]) svg
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    color: #090806 !important;
+    stroke: #090806 !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    button,
+    [role="button"],
+    input[type="button"],
+    input[type="submit"],
+    input[type="reset"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    border: 1px solid rgba(43, 34, 23, 0.35);
+    border-radius: 0.35rem;
+    background-color: rgba(245, 231, 210, 0.86);
+    color: #090806;
+    box-shadow: none;
+  }
+
+  [data-layout-variant="standard"] :where(
+    button:hover,
+    [role="button"]:hover,
+    input[type="button"]:hover,
+    input[type="submit"]:hover,
+    input[type="reset"]:hover
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    background-color: rgba(238, 222, 196, 0.92);
+    border-color: rgba(43, 34, 23, 0.5);
+  }
+
+  [data-layout-variant="standard"] :where(
+    button:focus-visible,
+    [role="button"]:focus-visible,
+    input[type="button"]:focus-visible,
+    input[type="submit"]:focus-visible,
+    input[type="reset"]:focus-visible
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    outline: 2px solid #5A3A18;
+    outline-offset: 2px;
+  }
+
+  [data-layout-variant="standard"] :where(
+    button:disabled,
+    button[aria-disabled="true"],
+    [role="button"][aria-disabled="true"],
+    input[type="button"]:disabled,
+    input[type="submit"]:disabled,
+    input[type="reset"]:disabled
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    opacity: 0.62;
+    cursor: not-allowed;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [role="switch"],
+    [data-slot="switch"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    display: inline-flex;
+    align-items: center;
+    min-width: 2.25rem;
+    height: 1.25rem;
+    padding: 2px;
+    border: 1px solid rgba(43, 34, 23, 0.35);
+    border-radius: 0.45rem;
+    background-color: rgba(245, 231, 210, 0.86);
+    box-shadow: none;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [role="switch"][aria-checked="true"],
+    [role="switch"][data-state="checked"],
+    [data-slot="switch"][aria-checked="true"],
+    [data-slot="switch"][data-state="checked"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    background-color: rgba(43, 34, 23, 0.85);
+    border-color: rgba(43, 34, 23, 0.65);
+  }
+
+  [data-layout-variant="standard"] :where(
+    [role="switch"] > span,
+    [data-slot="switch"] > span,
+    [data-slot="switch-thumb"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    width: 0.88rem;
+    height: 0.88rem;
+    border-radius: 0.28rem;
+    background-color: #F5E7D2;
+    box-shadow: none;
+  }
+
+  [data-layout-variant="standard"] :where(
+    button[aria-pressed="true"],
+    [role="button"][aria-pressed="true"],
+    button[data-state="on"],
+    [role="button"][data-state="on"],
+    button[data-state="active"],
+    [role="button"][data-state="active"],
+    [data-slot*="toggle"][aria-pressed="true"],
+    [data-slot*="toggle"][data-state="on"],
+    [data-slot*="toggle"][data-state="active"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    background-color: rgba(43, 34, 23, 0.85);
+    border-color: rgba(43, 34, 23, 0.65);
+    color: #F5E7D2;
+  }
+
+  [data-layout-variant="standard"] :where(
+    a,
+    [role="link"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    color: #061E1B;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [class*="muted"],
+    [class*="secondary"],
+    [data-slot="description"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    color: #211B15;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [class*="text-green"],
+    [class*="text-emerald"],
+    [class*="text-lime"],
+    [class*="text-success"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    color: #062E16 !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [class*="bg-green"],
+    [class*="bg-emerald"],
+    [class*="bg-lime"],
+    [class*="bg-success"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    background-color: #D0D8BE !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [class*="border-green"],
+    [class*="border-emerald"],
+    [class*="border-lime"],
+    [class*="border-success"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    border-color: #66724E !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [class*="stroke-green"],
+    [class*="stroke-emerald"],
+    [class*="stroke-lime"],
+    [class*="stroke-success"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    stroke: #062E16 !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [class*="fill-green"],
+    [class*="fill-emerald"],
+    [class*="fill-lime"],
+    [class*="fill-success"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    fill: #062E16 !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [class*="text-red"],
+    [class*="text-rose"],
+    [class*="text-pink"],
+    [class*="text-error"],
+    [class*="text-destructive"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    color: #5E0808 !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [class*="bg-red"],
+    [class*="bg-rose"],
+    [class*="bg-pink"],
+    [class*="bg-error"],
+    [class*="bg-destructive"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    background-color: #E6C2B7 !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [class*="border-red"],
+    [class*="border-rose"],
+    [class*="border-pink"],
+    [class*="border-error"],
+    [class*="border-destructive"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    border-color: #8D4B42 !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [class*="stroke-red"],
+    [class*="stroke-rose"],
+    [class*="stroke-pink"],
+    [class*="stroke-error"],
+    [class*="stroke-destructive"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    stroke: #5E0808 !important;
+  }
+
+  [data-layout-variant="standard"] :where(
+    [class*="fill-red"],
+    [class*="fill-rose"],
+    [class*="fill-pink"],
+    [class*="fill-error"],
+    [class*="fill-destructive"]
+  ):not(.teletype-plugin, .teletype-plugin *) {
+    fill: #5E0808 !important;
+  }
 
   /* Force Teletype33 onto every element that already wants a monospace
      glyph set. The dashboard's default rules are more specific than the
