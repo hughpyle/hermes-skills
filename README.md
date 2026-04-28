@@ -9,7 +9,7 @@ from a restored Teletype.
 
 Video (sound on!):
 
-https://github.com/user-attachments/assets/34d6fc69-453b-4dad-8b70-d4ca6e930598
+https://github.com/user-attachments/assets/f03328b8-2fb0-4c67-b8b0-dc36a3ad014f
 
 If you have a *real* Teletype ASR33, you can use [hermes-shell](https://github.com/hughpyle/hermes-shell)
 as the back-end, which provides a command-line shell that you can use
