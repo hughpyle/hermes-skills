@@ -14,9 +14,9 @@ palette:
   warmGlow: "rgba(120, 90, 60, 0.15)"
   noiseOpacity: 0.4
 typography:
-  fontSans: '"Teletype33", monospace'
+  fontSans: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
   fontMono: '"Teletype33", monospace'
-  fontDisplay: '"Teletype33", monospace'
+  fontDisplay: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
   fontUrl: "/dashboard-plugins/teletype/dist/fonts/teleprinter.css"
   baseSize: "16px"
   lineHeight: "1.4"

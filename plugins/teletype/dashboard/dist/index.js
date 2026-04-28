@@ -1071,13 +1071,12 @@ class PaperRoll {
         this.connected = false;
         this.connecting = false;
         this.onStatus("disconnected");
-        if (this.closed) {
-          // Deliberate close (e.g. clearSession or session swap); no error.
-          return;
-        }
         if (typeof event === "object" && event.code && event.code !== 1000) {
           const reason = `${event.reason || "connection closed"} (${this.endpoint})`;
           this.onError(`WebSocket closed (${event.code || "n/a"}): ${reason}`);
+        }
+        if (this.closed) {
+          return;
         }
         this.scheduleReconnect();
       });
@@ -1085,10 +1084,10 @@ class PaperRoll {
         this.connected = false;
         this.connecting = false;
         this.onStatus("disconnected");
+        this.onError(`WebSocket error: failed to connect to ${this.endpoint}`);
         if (this.closed) {
           return;
         }
-        this.onError(`WebSocket error: failed to connect to ${this.endpoint}`);
         this.scheduleReconnect();
       });
     }
@@ -1406,6 +1405,14 @@ class PaperRoll {
         keyQueueRef.current.clear();
       }
       if (socketRef.current) {
+        // Neutralize the old socket's handlers before closing so its async
+        // close/error events can't write back to React state and overwrite
+        // the successor socket's "connected" status.
+        socketRef.current.setHandlers({
+          onOut: noop,
+          onStatus: noop,
+          onError: noop,
+        });
         socketRef.current.close();
       }
 
